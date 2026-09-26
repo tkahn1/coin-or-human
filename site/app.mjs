@@ -1,10 +1,16 @@
-import createPredictor from './predictor.mjs';
+import { OPPONENTS } from './predictors/index.mjs';
 import { createGame, KEY_TO_BIT, BIT_TO_KEY } from './game.mjs';
 import { createCryptoRng } from './rng.mjs';
 
 const $ = (id) => document.getElementById(id);
 
 const GOAL = 400;
+
+let opponent = OPPONENTS[0];
+try {
+  const saved = localStorage.getItem('opponent');
+  opponent = OPPONENTS.find((o) => o.id === saved) ?? opponent;
+} catch {}
 
 let game;
 let caughtAt = null; // key number at which the verdict became HUMAN
@@ -13,7 +19,7 @@ function newGame() {
   $('error').hidden = true;
   try {
     // Separate crypto streams: one for the predictor, one (secret) for the displayed-guess draw.
-    game = createGame({ createPredictor, predRng: createCryptoRng(), drawRng: createCryptoRng() });
+    game = createGame({ createPredictor: opponent.create, predRng: createCryptoRng(), drawRng: createCryptoRng() });
   } catch (e) {
     showError(e);
     game = null;
@@ -85,6 +91,35 @@ function setAuto(on) {
   b.setAttribute('aria-pressed', String(on));
 }
 $('auto').addEventListener('click', (e) => { setAuto(!autoTimer); e.currentTarget.blur(); });
+
+function renderOpponents() {
+  for (const b of $('opponents').querySelectorAll('button')) {
+    b.setAttribute('aria-checked', String(b.dataset.id === opponent.id));
+  }
+}
+for (const o of OPPONENTS) {
+  const b = Object.assign(document.createElement('button'), { type: 'button', className: 'pill', textContent: o.name });
+  b.dataset.id = o.id;
+  b.setAttribute('role', 'radio');
+  b.addEventListener('click', (e) => {
+    e.currentTarget.blur();
+    if (o.id === opponent.id) return;
+    opponent = o;
+    try { localStorage.setItem('opponent', o.id); } catch {}
+    renderOpponents();
+    setAuto(false);
+    newGame();
+  });
+  $('opponents').append(b);
+}
+renderOpponents();
+
+for (const o of OPPONENTS) {
+  $('adversaries').append(
+    Object.assign(document.createElement('dt'), { textContent: o.name }),
+    Object.assign(document.createElement('dd'), { textContent: o.desc }),
+  );
+}
 
 $('reset').addEventListener('click', (e) => { setAuto(false); newGame(); e.currentTarget.blur(); });
 

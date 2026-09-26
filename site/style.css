@@ -45,6 +45,11 @@ main { max-width: 640px; margin: 0 auto; padding: 0 16px 64px; }
 .lede { margin: 7vh 0 0; color: var(--muted); }
 .goal { color: var(--text); font-weight: 500; }
 
+/* Adversary picker */
+.picker { margin-top: 28px; }
+.opponents { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.opponents .pill[aria-checked="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+
 /* Game */
 .game { margin-top: 40px; }
 .verdict {
@@ -100,6 +105,9 @@ main { max-width: 640px; margin: 0 auto; padding: 0 16px 64px; }
 .how { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9375rem; }
 .how h2 { margin: 0 0 8px; font-size: .9375rem; font-weight: 600; color: var(--text); }
 .how p { margin: 0 0 10px; max-width: 52ch; }
+.adversaries { margin: 16px 0; }
+.adversaries dt { color: var(--text); font-weight: 600; margin-top: 12px; }
+.adversaries dd { margin: 2px 0 0; max-width: 52ch; }
 .how strong { color: var(--text); font-weight: 600; }
 
 @media (max-width: 480px) {

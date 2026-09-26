@@ -1,5 +1,5 @@
 // ensemble: pool of simple experts (context counts, lag/match, n-gram-majority agreement, CTW incl. phase-CTW,
-// score-driven style-flip HMMs) -> tempered Bayes mixture + level bandit/probe for g; Bayes mixture for p. See ALGORITHM.md.
+// score-driven style-flip HMMs) -> tempered Bayes mixture + level bandit/probe for g; Bayes mixture for p.
 const LOG = Math.log, EXP = Math.exp;
 const stretch = (p) => LOG(p / (1 - p));
 const squash = (x) => (x > 30 ? 1 : x < -30 ? 0 : 1 / (1 + EXP(-x)));

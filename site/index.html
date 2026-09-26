@@ -44,6 +44,10 @@
         >
       </p>
 
+      <div class="picker">
+        <div class="opponents" role="radiogroup" aria-label="Adversary" id="opponents"></div>
+      </div>
+
       <section class="game" aria-label="Game">
         <p class="verdict" id="verdict" data-state="random" aria-live="polite">
           random<span class="soft"> so far</span>
@@ -93,6 +97,7 @@
           for how the algorithm actually works.
         </p>
         <p>Filled dots are right guesses. Flip coins presses random keys.</p>
+        <dl class="adversaries" id="adversaries"></dl>
         <p>
           Inspired by
           <a href="https://github.com/elsehow/aaronson-oracle"

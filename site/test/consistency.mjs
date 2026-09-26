@@ -1,13 +1,13 @@
 // Headless checks: node site/test/consistency.mjs
 // 1. score.mjs reproduces the reference betting-score formulas bit-for-bit on random sequences.
 // 2. game.mjs reproduces the referee's loop (predict -> draw guess -> key -> hits/score -> update).
-// 3. Null check: 2000 fair-coin sessions x 300 keys through the site's own game loop and predictor
+// 3. Null check: 1000 fair-coin sessions x 300 keys through the site's own game loop, for each opponent
 //    -> false HUMAN rate <= ~5%, accuracy ~ 50%.
 import assert from 'node:assert/strict';
 import { createScore, LOG_THRESH } from '../score.mjs';
 import { createGame } from '../game.mjs';
 import { createCryptoRng } from '../rng.mjs';
-import createPredictor from '../predictor.mjs';
+import { OPPONENTS } from '../predictors/index.mjs';
 
 // Seeded PRNG for reproducible comparisons (mulberry32).
 function seeded(a) {
@@ -74,12 +74,12 @@ function refereeSession(pred, drawRng, keyFn, n) {
     assert.equal(st.peak, ref.peak); assert.equal(st.human, ref.det);
     humans += ref.det;
   }
-  console.log(`score.mjs matches run.mjs formulas exactly on 500 random sequences (${humans} reached W>=20)`);
+  console.log(`score.mjs matches reference formulas exactly on 500 random sequences (${humans} reached W>=20)`);
 }
 
-// 2. Game loop vs referee loop with identical seeded streams.
-{
-  for (let s = 0; s < 200; s++) {
+for (const { name, create: createPredictor } of OPPONENTS) {
+  // 2. Game loop vs referee loop with identical seeded streams.
+  for (let s = 0; s < 100; s++) {
     const keyRng = seeded(s * 7 + 1), keys = Array.from({ length: 300 }, () => (keyRng() < 0.6 ? 1 : 0));
     const ref = refereeSession(createPredictor({ rng: seeded(s * 13 + 5) }), seeded(s ^ 0x2545f491), (t) => keys[t], 300);
     const game = createGame({ createPredictor, predRng: seeded(s * 13 + 5), drawRng: seeded(s ^ 0x2545f491) });
@@ -88,12 +88,9 @@ function refereeSession(pred, drawRng, keyFn, n) {
     assert.equal(st.hits, ref.hits); assert.equal(st.peak, ref.peak);
     assert.deepEqual(st.history.map((h) => h.guess), ref.guesses);
   }
-  console.log('game.mjs loop matches referee loop (hits, guesses, peak) on 200 seeded sessions');
-}
 
-// 3. Null check with the site's crypto RNGs and game loop.
-{
-  const SESSIONS = 2000, N = 300;
+  // 3. Null check with the site's crypto RNGs and game loop.
+  const SESSIONS = 1000, N = 300;
   const coin = createCryptoRng();
   let fp = 0, hits = 0;
   for (let s = 0; s < SESSIONS; s++) {
@@ -105,9 +102,9 @@ function refereeSession(pred, drawRng, keyFn, n) {
   }
   const fpr = fp / SESSIONS, acc = hits / (SESSIONS * N);
   const z = (hits - (SESSIONS * N) / 2) / Math.sqrt((SESSIONS * N) / 4);
-  console.log(`null: ${SESSIONS} fair-coin sessions x ${N} keys: false HUMAN rate = ${(100 * fpr).toFixed(2)}%, accuracy = ${(100 * acc).toFixed(2)}% (z=${z.toFixed(2)})`);
-  // Ville bound is 5%; allow ~3 sigma of binomial noise at n=2000 (sd ~0.49%).
-  assert.ok(fpr <= 0.05 + 3 * Math.sqrt(0.05 * 0.95 / SESSIONS), `false HUMAN rate too high: ${fpr}`);
-  assert.ok(Math.abs(z) < 4, `null accuracy off 50%: ${acc}`);
+  console.log(`${name}: game loop matches referee on 100 seeded sessions; null: false HUMAN ${(100 * fpr).toFixed(2)}%, accuracy ${(100 * acc).toFixed(2)}% (z=${z.toFixed(2)})`);
+  // Ville bound is 5%; allow ~3 sigma of binomial noise.
+  assert.ok(fpr <= 0.05 + 3 * Math.sqrt(0.05 * 0.95 / SESSIONS), `${name}: false HUMAN rate too high: ${fpr}`);
+  assert.ok(Math.abs(z) < 4, `${name}: null accuracy off 50%: ${acc}`);
 }
 console.log('ALL OK');

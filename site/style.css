@@ -1,0 +1,110 @@
+:root {
+  --bg: #fafaf9;
+  --text: #171717;
+  --muted: #737373;
+  --faint: #d6d6d4;
+  --line: #e7e7e5;
+  --human: #c2410c;
+  --pill: #f0f0ee;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111111;
+    --text: #ededed;
+    --muted: #8f8f8f;
+    --faint: #3a3a3a;
+    --line: #262626;
+    --human: #fb8b5a;
+    --pill: #1f1f1f;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-underline-offset: 3px; text-decoration-color: var(--faint); }
+a:hover { text-decoration-color: currentColor; }
+kbd {
+  font: 500 .85em ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 1px 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; color: var(--text);
+}
+
+/* Header */
+.bar {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 640px; margin: 0 auto; padding: 20px 16px;
+}
+.wordmark { font-weight: 600; letter-spacing: -0.01em; }
+
+main { max-width: 640px; margin: 0 auto; padding: 0 16px 64px; }
+.lede { margin: 7vh 0 0; color: var(--muted); }
+.goal { color: var(--text); font-weight: 500; }
+
+/* Game */
+.game { margin-top: 40px; }
+.verdict {
+  margin: 0; font-size: clamp(2.75rem, 9vw, 4.5rem); font-weight: 650; letter-spacing: -0.045em; line-height: 1;
+  transition: color .25s;
+}
+.verdict .soft { color: var(--faint); font-weight: 500; }
+.verdict[data-state="human"] { color: var(--human); }
+
+.stats { display: flex; gap: 40px; margin: 28px 0 0; }
+.stats div { display: flex; flex-direction: column-reverse; }
+.stats dt { font-size: .8125rem; color: var(--muted); }
+.stats dd { margin: 0; font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+.history {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 32px; min-height: 8px;
+  max-height: 124px; overflow-y: auto; scrollbar-width: thin;
+}
+.history b { flex: none; width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--faint); }
+.history b.hit { background: var(--text); box-shadow: none; }
+.history b:last-child { outline: 1.5px solid var(--muted); outline-offset: 1.5px; }
+
+.stats .of { color: var(--faint); font-weight: 500; }
+.result { margin: 16px 0 0; min-height: 1.5em; font-weight: 500; }
+.result[data-state="human"] { color: var(--human); }
+
+/* On-screen keys only where there is no physical keyboard. */
+.keys { display: none; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
+@media (hover: none) and (pointer: coarse) { .keys { display: grid; } }
+.key {
+  font: 500 1.5rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; height: 96px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--pill); color: var(--text);
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.key.pressed { background: var(--line); transform: scale(.98); }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 36px; }
+.pill {
+  font: inherit; font-size: .875rem; padding: 6px 14px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--pill); color: var(--text);
+}
+.pill:hover { border-color: var(--faint); }
+.pill[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.link {
+  font: inherit; font-size: .875rem; color: var(--muted); background: none; border: 0; padding: 6px 4px; cursor: pointer;
+}
+.link:hover, .link[aria-expanded="true"] { color: var(--text); }
+:is(.pill, .link, .key):focus-visible { outline: 2px solid var(--muted); outline-offset: 2px; }
+
+.error { color: var(--human); font-size: .9rem; }
+
+/* More info */
+.how { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9375rem; }
+.how h2 { margin: 0 0 8px; font-size: .9375rem; font-weight: 600; color: var(--text); }
+.how p { margin: 0 0 10px; max-width: 52ch; }
+.how strong { color: var(--text); font-weight: 600; }
+
+@media (max-width: 480px) {
+  .lede { margin-top: 3vh; }
+  .game { margin-top: 32px; }
+  .stats { gap: 32px; margin-top: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

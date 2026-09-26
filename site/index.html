@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Coin or Human?</title>
+    <meta
+      name="description"
+      content="Press F or D as randomly as you can. A machine guesses each key before you press it. Can you pass as a coin?"
+    />
+    <meta property="og:title" content="Coin or Human?" />
+    <meta
+      property="og:description"
+      content="Press F or D as randomly as you can. A machine guesses each key before you press it. Can you pass as a coin?"
+    />
+    <meta property="og:type" content="website" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23161616'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fafafa' stroke-width='2'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="app.mjs"></script>
+  </head>
+  <body>
+    <header class="bar">
+      <span class="wordmark">Coin or Human?</span>
+      <button
+        type="button"
+        class="link"
+        id="how-open"
+        aria-controls="how"
+        aria-expanded="false"
+      >
+        More info
+      </button>
+    </header>
+
+    <main>
+      <p class="lede">
+        Press <kbd>F</kbd> or <kbd>D</kbd> as randomly as you can. The machine
+        guesses each key before you press it.<br /><span class="goal"
+          >Can you reach 400 keys without being called human?</span
+        >
+      </p>
+
+      <section class="game" aria-label="Game">
+        <p class="verdict" id="verdict" data-state="random" aria-live="polite">
+          random<span class="soft"> so far</span>
+        </p>
+
+        <dl class="stats">
+          <div>
+            <dt>Keys</dt>
+            <dd id="n">0</dd>
+          </div>
+          <div>
+            <dt>Guessed right</dt>
+            <dd id="acc">–</dd>
+          </div>
+        </dl>
+        <p class="result" id="result" aria-live="polite"></p>
+
+        <div
+          class="history"
+          id="history"
+          aria-label="Your keys. Filled dots: the machine guessed right."
+        ></div>
+
+        <div class="keys">
+          <button class="key" id="btn-d" type="button" aria-label="Press D">
+            D
+          </button>
+          <button class="key" id="btn-f" type="button" aria-label="Press F">
+            F
+          </button>
+        </div>
+
+        <p class="error" id="error" hidden></p>
+
+        <nav class="controls" aria-label="Controls">
+          <button type="button" id="auto" class="pill" aria-pressed="false">
+            Flip coins
+          </button>
+          <button type="button" id="reset" class="pill">Reset</button>
+        </nav>
+      </section>
+
+      <section class="how" id="how" hidden>
+        <p>
+          Before each key, the machine guesses what you will press. If it wins
+          enough, you're human; the aim is to remain undetected. See the Github
+          for how the algorithm actually works.
+        </p>
+        <p>Filled dots are right guesses. Flip coins presses random keys.</p>
+        <p>
+          Inspired by
+          <a href="https://github.com/elsehow/aaronson-oracle"
+            >aaronson-oracle</a
+          >.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

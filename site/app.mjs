@@ -4,7 +4,7 @@ import { createCryptoRng } from './rng.mjs';
 
 const $ = (id) => document.getElementById(id);
 
-const GOAL = 400;
+const GOAL = 600;
 
 let opponent = OPPONENTS[0];
 try {

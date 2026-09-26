@@ -14,6 +14,16 @@ try {
 
 let game;
 let caughtAt = null; // key number at which the verdict became HUMAN
+let usedCoins = false; // a game that used Flip coins doesn't count toward the best score
+
+// Best undetected run per adversary, kept in this browser only.
+const bestKey = () => `best:${opponent.id}`;
+function loadBest() {
+  try { return Number(localStorage.getItem(bestKey())) || 0; } catch { return 0; }
+}
+function saveBest(v) {
+  try { localStorage.setItem(bestKey(), String(v)); } catch {}
+}
 
 function newGame() {
   $('error').hidden = true;
@@ -25,6 +35,7 @@ function newGame() {
     game = null;
   }
   caughtAt = null;
+  usedCoins = false;
   $('history').replaceChildren();
   render(game ? game.stats() : null);
 }
@@ -48,6 +59,12 @@ function render(s) {
     : n >= GOAL ? `${GOAL} keys undetected. You pass as a coin.` : '';
   $('result').dataset.state = human ? 'human' : n >= GOAL ? 'pass' : '';
   $('acc').textContent = n ? `${Math.round(100 * accuracy)}%` : '–';
+
+  // Keys survived before being called human (or so far, if not caught yet).
+  let best = loadBest();
+  const survived = human ? caughtAt - 1 : n;
+  if (!usedCoins && survived > best) saveBest((best = survived));
+  $('best').textContent = best ? String(best) : '–';
 }
 
 function press(key) {
@@ -85,6 +102,7 @@ const coinRng = createCryptoRng();
 let autoTimer = null;
 function setAuto(on) {
   clearInterval(autoTimer);
+  if (on) usedCoins = true;
   autoTimer = on ? setInterval(() => press(coinRng() < 0.5 ? 'f' : 'd'), 50) : null;
   const b = $('auto');
   b.textContent = on ? 'Stop flipping' : 'Flip coins';
@@ -109,6 +127,10 @@ for (const o of OPPONENTS) {
     renderOpponents();
     setAuto(false);
     newGame();
+    const g = document.querySelector('.game');
+    g.classList.remove('swapping');
+    void g.offsetWidth; // restart the animation
+    g.classList.add('swapping');
   });
   $('opponents').append(b);
 }

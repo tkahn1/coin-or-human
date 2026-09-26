@@ -48,7 +48,12 @@ main { max-width: 640px; margin: 0 auto; padding: 0 16px 64px; }
 /* Adversary picker */
 .picker { margin-top: 28px; }
 .opponents { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.opponents .pill { transition: color .15s, background-color .15s, border-color .15s; }
 .opponents .pill[aria-checked="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* Game area eases back in after switching adversary. */
+@keyframes swap-in { from { opacity: .5; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+.game.swapping { animation: swap-in .2s ease-out; }
 
 /* Game */
 .game { margin-top: 40px; }
@@ -115,4 +120,4 @@ main { max-width: 640px; margin: 0 auto; padding: 0 16px 64px; }
   .game { margin-top: 32px; }
   .stats { gap: 32px; margin-top: 22px; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
